@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { testdata } from './test';
-import axios from 'axios';
+import { useState } from 'react';
+// import { testdata } from './test';
+// import axios from 'axios';
 
 export default function ExampleComponent() {
-    const [metaContent, setMetaContent] = useState('');
+    // const [metaContent, setMetaContent] = useState('');
     const [username, setUsername] = useState('');
 
     async function fetchMetaContent() {
@@ -12,7 +12,7 @@ export default function ExampleComponent() {
 
         try {
             //   const response = await fetch(`/api/fetchMeta?url=https://www.instagram.com/${username}/`);
-            const response:any = await fetch(`https://www.instagram.com/${username}/`);
+            const response = await fetch(`https://www.instagram.com/${username}/`);
             const data = await response.text();
             console.log(data)
             // const match: any = data.match(/<meta property="og:description" content="([^"]*)"/);
@@ -30,10 +30,10 @@ export default function ExampleComponent() {
         }
     }
 
-    const extractFollowers = (content: string) => {
-        const match = content.match(/(\d{1,3}(?:,\d{3})*) Followers/);
-        return match ? match[1] + ' Followers' : 'Followers not found';
-    };
+    // const extractFollowers = (content: string) => {
+    //     const match = content.match(/(\d{1,3}(?:,\d{3})*) Followers/);
+    //     return match ? match[1] + ' Followers' : 'Followers not found';
+    // };
 
     return (
         <div>
@@ -44,7 +44,7 @@ export default function ExampleComponent() {
                 onChange={(e) => setUsername(e.target.value)}
             />
             <button onClick={fetchMetaContent}>Fetch Meta Tag</button>
-            <p>Followers Count: {metaContent}</p>
+            {/* <p>Followers Count: {metaContent}</p> */}
         </div>
     );
 }
