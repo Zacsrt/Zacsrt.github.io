@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import axios from 'axios';
 
 export default function ExampleComponent() {
   const [metaContent, setMetaContent] = useState('');
@@ -10,13 +11,12 @@ export default function ExampleComponent() {
     if (!username) return;
 
     try {
-      const response = await fetch(`/api/fetchMeta?url=https://www.instagram.com/${username}/`);
-      const data = await response.json();
+      const response = await axios.get(`/api/fetchMeta?url=https://www.instagram.com/${username}/`);
+      const data = response.data;
       if (data.content) {
-        // ใช้ extractFollowers ที่ดึงข้อมูลจาก content
         const followers = extractFollowers(data.content);
         setMetaContent(followers);
-        setName(username)
+        setName(username);
       } else {
         console.error('Meta tag not found');
       }
@@ -25,11 +25,9 @@ export default function ExampleComponent() {
     }
   }
 
-  // Function to extract followers count
   const extractFollowers = (content: string) => {
     const match = content.match(/<meta property="og:description" content="([^"]*)"/);
     if (match && match[1]) {
-      // ใช้ regex ดึงข้อมูล followers
       const followersMatch = match[1].match(/(\d{1,3}(?:,\d{3})*) Followers/);
       return followersMatch ? followersMatch[1] + ' Followers' : 'Followers not found';
     }
@@ -51,7 +49,7 @@ export default function ExampleComponent() {
       >
         Fetch Meta Tag
       </button>
-            <p className="mt-2 text-lg font-bold">{name}</p>
+      <p className="mt-2 text-lg font-bold">{name}</p>
       <p className="mt-2 text-lg font-bold">Followers Count: {metaContent}</p>
     </div>
   );
