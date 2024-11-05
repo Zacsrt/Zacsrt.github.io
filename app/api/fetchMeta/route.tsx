@@ -29,7 +29,8 @@ export async function GET(req: Request) {
       name,
       imageUrl,
     });
-  } catch (error) {
+  } catch (err) {  // เปลี่ยนชื่อจาก error เป็น err
+    console.error('Error fetching data:', err);
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
