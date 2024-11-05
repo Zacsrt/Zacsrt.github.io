@@ -1,30 +1,35 @@
+import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { JSDOM } from 'jsdom';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');
 
   if (!url) {
-    return new Response(JSON.stringify({ error: 'URL parameter is missing' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json({ error: 'URL parameter is missing' }, { status: 400 });
   }
 
   try {
     const response = await axios.get(url);
-    const html = response.data;
+    const dom = new JSDOM(response.data);
+    const document = dom.window.document;
 
-    // ส่ง HTML กลับไปยัง component
-    return new Response(JSON.stringify({ content: html }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
+    // Extract meta tags data
+    const descriptionMeta = document.querySelector('meta[property="og:description"]');
+    const titleMeta = document.querySelector('meta[property="og:title"]');
+    const imageMeta = document.querySelector('meta[property="og:image"]');
+
+    const followers = descriptionMeta ? descriptionMeta.getAttribute('content') : null;
+    const name = titleMeta ? titleMeta.getAttribute('content') : null;
+    const imageUrl = imageMeta ? imageMeta.getAttribute('content') : null;
+
+    return NextResponse.json({
+      followers,
+      name,
+      imageUrl,
     });
-  } catch (err) {  // เปลี่ยนชื่อจาก error เป็น err
-    console.error('Error fetching data:', err);  // แสดงข้อผิดพลาดในคอนโซล
-    return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
